@@ -33,6 +33,6 @@ spec:
     spec: 
       containers: 
         - name: django 
-          image: lucasqz/kubernetes1:latest
+          image: USUÁRIO/REPOSITORIO:VERSÃO # substitua pelo seu repositório no Docker Hub
           ports:
             - containerPort: 8000

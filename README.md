@@ -1,216 +1,179 @@
-# Deploy a Production Ready Kubernetes Cluster
+# <img align="left" alt="GitHub" height="30" width="30" src="https://upload.wikimedia.org/wikipedia/commons/3/39/Kubernetes_logo_without_workmark.svg"> Criar Cluster Kubernetes + Deploy de Aplicação Django
 
-![Kubernetes Logo](https://raw.githubusercontent.com/kubernetes-sigs/kubespray/master/docs/img/kubernetes-logo.png)
 
-If you have questions, check the documentation at [kubespray.io](https://kubespray.io) and join us on the [kubernetes slack](https://kubernetes.slack.com), channel **\#kubespray**.
-You can get your invite [here](http://slack.k8s.io/)
 
-- Can be deployed on **[AWS](docs/cloud_providers/aws.md), GCE, [Azure](docs/cloud_providers/azure.md), [OpenStack](docs/cloud_controllers/openstack.md), [vSphere](docs/cloud_controllers/vsphere.md), [Equinix Metal](docs/cloud_providers/equinix-metal.md) (bare metal), Oracle Cloud Infrastructure (Experimental), or Baremetal**
-- **Highly available** cluster
-- **Composable** (Choice of the network plugin for instance)
-- Supports most popular **Linux distributions**
-- **Continuous integration tests**
+## 📌 Objetivo do Projeto:
+- Criaremos um Cluster Kubernetes com duas instancias
+- Em seguida faremos o deploy da nossa aplicação Django para esse Cluster
+- Nossa aplicação é uma página simples de galeria de fotos para exemplificar a implantação de uma aplicação Django em um Cluster Kubernetes utilizando o serviço EKS da AWS.
 
-## Quick Start
+## 🌐 O que é um Cluster Kubernetes:
+- Um cluster Kubernetes é um conjunto de máquinas (físicas ou virtuais) que trabalham juntas para rodar aplicações containerizadas.
+- O objetivo é ter uma aplicação com alta disponibilidade garantindo que o sistema esteja sempre disponível, além de distribuir o tráfego de rede de maneira eficiente entre os containers para garantir que a carga seja bem gerenciada e que os recursos não fiquem sobrecarregados.
 
-Below are several ways to use Kubespray to deploy a Kubernetes cluster.
+Vantagens de usar um cluster Kubernetes
+1. Gerenciamento de Contêineres.
+2. Escalabilidade
+3. Alta Disponibilidade
+4. Balanceamento de Carga
+5. Orquestração de Implantações
+6. Infraestrutura como Código
+7. Integração com Ecosistemas de DevOps
+<br><br>
 
-### Ansible
+## 🔧 1 - Criando o Cluster Kubernetes com o serviço EKS da AWS
+Certifique-se de que você tem as seguintes ferramentas instaladas no seu computador:
 
-#### Usage
-
-See [Getting started](/docs/getting_started/getting-started.md)
-
-#### Collection
-
-See [here](docs/ansible/ansible_collection.md) if you wish to use this repository as an Ansible collection
-
-### Vagrant
-
-For Vagrant we need to install Python dependencies for provisioning tasks.
-Check that ``Python`` and ``pip`` are installed:
-
+- AWS CLI:  <br>
+Siga as instruções oficiais em: https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html <br>
+Verifique a instalação:
 ```ShellSession
-python -V && pip -V
+aws --version
 ```
 
-If this returns the version of the software, you're good to go. If not, download and install Python from here <https://www.python.org/downloads/source/>
-
-Install Ansible according to [Ansible installation guide](/docs/ansible/ansible.md#installing-ansible)
-then run the following step:
-
+- eksctl:  <br>
+Instale conforme o sistema operacional:
+Linux/macOS
 ```ShellSession
-vagrant up
+curl -s --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /usr/local/bin
+```
+Windows:
+```ShellSession
+choco install eksctl
+```
+Verifique:
+```ShellSession
+eksctl version
 ```
 
-## Documents
+- kubectl:  <br>
+Instale a versão compatível com o Kubernetes:
+```ShellSession
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/$(uname -s | tr '[:upper:]' '[:lower:]')/amd64/kubectl"
+chmod +x kubectl
+sudo mv kubectl /usr/local/bin
+```
+Verifique:
+```ShellSession
+kubectl version --client
+```
 
-- [Requirements](#requirements)
-- [Kubespray vs ...](docs/getting_started/comparisons.md)
-- [Getting started](docs/getting_started/getting-started.md)
-- [Setting up your first cluster](docs/getting_started/setting-up-your-first-cluster.md)
-- [Ansible inventory and tags](docs/ansible/ansible.md)
-- [Integration with existing ansible repo](docs/operations/integration.md)
-- [Deployment data variables](docs/ansible/vars.md)
-- [DNS stack](docs/advanced/dns-stack.md)
-- [HA mode](docs/operations/ha-mode.md)
-- [Network plugins](#network-plugins)
-- [Vagrant install](docs/developers/vagrant.md)
-- [Flatcar Container Linux bootstrap](docs/operating_systems/flatcar.md)
-- [Fedora CoreOS bootstrap](docs/operating_systems/fcos.md)
-- [openSUSE setup](docs/operating_systems/opensuse.md)
-- [Downloaded artifacts](docs/advanced/downloads.md)
-- [Equinix Metal](docs/cloud_providers/equinix-metal.md)
-- [OpenStack](docs/cloud_controllers/openstack.md)
-- [vSphere](docs/cloud_controllers/vsphere.md)
-- [Large deployments](docs/operations/large-deployments.md)
-- [Adding/replacing a node](docs/operations/nodes.md)
-- [Upgrades basics](docs/operations/upgrades.md)
-- [Air-Gap installation](docs/operations/offline-environment.md)
-- [NTP](docs/advanced/ntp.md)
-- [Hardening](docs/operations/hardening.md)
-- [Mirror](docs/operations/mirror.md)
-- [Roadmap](docs/roadmap/roadmap.md)
+- Configure a AWS CLI
+```ShellSession
+aws configure
+```
+Insira:  <br> Access Key ID  <br> Secret Access Key  <br> Região padrão (ex.: us-east-1)
 
-## Supported Linux Distributions
+- Verifique as Permissões da Conta  <br>
+Certifique-se de que o usuário tem as permissões adequadas.  <br>
+Você pode usar a política gerenciada da AWS chamada AdministratorAccess durante o desenvolvimento.
 
-- **Flatcar Container Linux by Kinvolk**
-- **Debian** Bookworm, Bullseye
-- **Ubuntu** 20.04, 22.04, 24.04
-- **CentOS/RHEL** [8, 9](docs/operating_systems/centos.md#centos-8)
-- **Fedora** 39, 40
-- **Fedora CoreOS** (see [fcos Note](docs/operating_systems/fcos.md))
-- **openSUSE** Leap 15.x/Tumbleweed
-- **Oracle Linux** [8, 9](docs/operating_systems/centos.md#centos-8)
-- **Alma Linux** [8, 9](docs/operating_systems/centos.md#centos-8)
-- **Rocky Linux** [8, 9](docs/operating_systems/centos.md#centos-8)
-- **Kylin Linux Advanced Server V10** (experimental: see [kylin linux notes](docs/operating_systems/kylinlinux.md))
-- **Amazon Linux 2** (experimental: see [amazon linux notes](docs/operating_systems/amazonlinux.md))
-- **UOS Linux** (experimental: see [uos linux notes](docs/operating_systems/uoslinux.md))
-- **openEuler** (experimental: see [openEuler notes](docs/operating_systems/openeuler.md))
+## <img align="left" alt="GitHub" height="30" width="30" src="https://upload.wikimedia.org/wikipedia/commons/3/39/Kubernetes_logo_without_workmark.svg"> Criar o Cluster EKS:
+- Crie o Cluster  <br>
+Deve demorar cerca de 15 minutos para a conclusão da criação do Cluster.
+```ShellSession
+eksctl create cluster \
+  --name meu-cluster \
+  --region us-east-1 \
+  --nodegroup-name meu-grupo-de-nos \
+  --nodes 2 \
+  --nodes-min 1 \
+  --nodes-max 3 \
+  --node-type t2.micro \
+  --with-oidc \
+  --managed
+```
 
-Note: Upstart/SysV init based OS types are not supported.
+A criação pode levar 10 a 15 minutos. Durante o processo, o eksctl cria os seguintes recursos: 
+- Cluster EKS.
+- Uma VPC com sub-redes.
+- Grupos de segurança e outros recursos necessários.
+- Nós gerenciados conectados ao cluster.
 
-## Supported Components
+## 🔨 Configurar o kubectl
+- Teste a Conexão
+```ShellSession
+kubectl get svc
+```
+Você deve ver o serviço kubernetes listado.
 
-- Core
-  - [kubernetes](https://github.com/kubernetes/kubernetes) v1.31.3
-  - [etcd](https://github.com/etcd-io/etcd) v3.5.16
-  - [docker](https://www.docker.com/) v26.1
-  - [containerd](https://containerd.io/) v1.7.23
-  - [cri-o](http://cri-o.io/) v1.31.0 (experimental: see [CRI-O Note](docs/CRI/cri-o.md). Only on fedora, ubuntu and centos based OS)
-- Network Plugin
-  - [cni-plugins](https://github.com/containernetworking/plugins) v1.2.0
-  - [calico](https://github.com/projectcalico/calico) v3.28.1
-  - [cilium](https://github.com/cilium/cilium) v1.15.9
-  - [flannel](https://github.com/flannel-io/flannel) v0.22.0
-  - [kube-ovn](https://github.com/alauda/kube-ovn) v1.12.21
-  - [kube-router](https://github.com/cloudnativelabs/kube-router) v2.0.0
-  - [multus](https://github.com/k8snetworkplumbingwg/multus-cni) v3.8
-  - [weave](https://github.com/rajch/weave) v2.8.7
-  - [kube-vip](https://github.com/kube-vip/kube-vip) v0.8.0
-- Application
-  - [cert-manager](https://github.com/jetstack/cert-manager) v1.15.3
-  - [coredns](https://github.com/coredns/coredns) v1.11.3
-  - [ingress-nginx](https://github.com/kubernetes/ingress-nginx) v1.11.2
-  - [krew](https://github.com/kubernetes-sigs/krew) v0.4.4
-  - [argocd](https://argoproj.github.io/) v2.11.0
-  - [helm](https://helm.sh/) v3.15.4
-  - [metallb](https://metallb.universe.tf/)  v0.13.9
-  - [registry](https://github.com/distribution/distribution) v2.8.1
-- Storage Plugin
-  - [cephfs-provisioner](https://github.com/kubernetes-incubator/external-storage) v2.1.0-k8s1.11
-  - [rbd-provisioner](https://github.com/kubernetes-incubator/external-storage) v2.1.1-k8s1.11
-  - [aws-ebs-csi-plugin](https://github.com/kubernetes-sigs/aws-ebs-csi-driver) v0.5.0
-  - [azure-csi-plugin](https://github.com/kubernetes-sigs/azuredisk-csi-driver) v1.10.0
-  - [cinder-csi-plugin](https://github.com/kubernetes/cloud-provider-openstack/blob/master/docs/cinder-csi-plugin/using-cinder-csi-plugin.md) v1.30.0
-  - [gcp-pd-csi-plugin](https://github.com/kubernetes-sigs/gcp-compute-persistent-disk-csi-driver) v1.9.2
-  - [local-path-provisioner](https://github.com/rancher/local-path-provisioner) v0.0.24
-  - [local-volume-provisioner](https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner) v2.5.0
-  - [node-feature-discovery](https://github.com/kubernetes-sigs/node-feature-discovery) v0.16.4
+- Verificar o Cluster
+```ShellSession
+kubectl get nodes
+```
+O resultado deve mostrar os nós criados no grupo.
+Seguindo essas etapas, você terá um cluster Kubernetes funcional na AWS utilizando o serviço EKS e o eksctl.
+<br><br>
 
-## Container Runtime Notes
 
-- The cri-o version should be aligned with the respective kubernetes version (i.e. kube_version=1.20.x, crio_version=1.20)
+## 💻 2 - Deploy da Aplicação Django para o Cluster Kubernetes.
+- Certifique-se de ter o Docker instalado
+```ShellSession
+docker --version
+```
 
-## Requirements
+- Criar a imagem da aplicação
+```ShellSession
+docker build -t <nome_da_imagem> .  **<nome_da_imagem> deve ser <nome_usuario>/<nome_repositorio>
+```
 
-- **Minimum required version of Kubernetes is v1.29**
-- **Ansible v2.14+, Jinja 2.11+ and python-netaddr is installed on the machine that will run Ansible commands**
-- The target servers must have **access to the Internet** in order to pull docker images. Otherwise, additional configuration is required (See [Offline Environment](docs/operations/offline-environment.md))
-- The target servers are configured to allow **IPv4 forwarding**.
-- If using IPv6 for pods and services, the target servers are configured to allow **IPv6 forwarding**.
-- The **firewalls are not managed**, you'll need to implement your own rules the way you used to.
-    in order to avoid any issue during deployment you should disable your firewall.
-- If kubespray is run from non-root user account, correct privilege escalation method
-    should be configured in the target servers. Then the `ansible_become` flag
-    or command parameters `--become or -b` should be specified.
+- Subir a imagem para o Docker Hub
+```ShellSession
+docker login
+docker push <nome_da_imagem>
+docker logout
+```
 
-Hardware:
-These limits are safeguarded by Kubespray. Actual requirements for your workload can differ. For a sizing guide go to the [Building Large Clusters](https://kubernetes.io/docs/setup/cluster-large/#size-of-master-and-master-components) guide.
+- Executar o arquivo Kubernetes.yaml 
+Acesse a pasta do projeto e execute o comando abaixo
+```ShellSession
+kubectl apply -f <arquivo_yaml>
+```
 
-- Master
-  - Memory: 1500 MB
-- Node
-  - Memory: 1024 MB
+- Visualizar o Deployment
+```ShellSession
+kubectl get deployment
+```
 
-## Network Plugins
+- Visualizar os Pods
+```ShellSession
+kubectl get pods
+```
 
-You can choose among ten network plugins. (default: `calico`, except Vagrant uses `flannel`)
+- Visualizar o Service
+```ShellSession
+kubectl get service
+```
+<br>
 
-- [flannel](docs/CNI/flannel.md): gre/vxlan (layer 2) networking.
+## 📡 3 - Acessar a aplicação através do Cluster
+Visualize o ip de acesso ao service. É com ele que você acessará a aplicação.
+```ShellSession
+kubectl get service  <nome_do_service>    **encontra <nome_do_service> com o comando: kubectl get service
+```
+Acesse pelo navegador:
+http:// EXTERNAL-IP
+<br><br>
 
-- [Calico](https://docs.tigera.io/calico/latest/about/) is a networking and network policy provider. Calico supports a flexible set of networking options
-    designed to give you the most efficient networking across a range of situations, including non-overlay
-    and overlay networks, with or without BGP. Calico uses the same engine to enforce network policy for hosts,
-    pods, and (if using Istio and Envoy) applications at the service mesh layer.
+## ⛔ 4 - Destruir o Cluster (Se Necessário)
+Utilizar o serviço EKS da AWS implica em custos. <br>
+Se você quiser remover o cluster e todos os recursos associados, execute:
+```ShellSession
+eksctl delete cluster --name meu-cluster --region us-east-1
+```
+<br>
 
-- [cilium](http://docs.cilium.io/en/latest/): layer 3/4 networking (as well as layer 7 to protect and secure application protocols), supports dynamic insertion of BPF bytecode into the Linux kernel to implement security services, networking and visibility logic.
+## 🛠️ Construído com
+* [AWS]() - plataforma de serviços de computação em nuvem oferecida pela Amazon
+* [EKS]() - serviço gerenciado de Kubernetes da AWS para facilitar a implementação do cluster Kubernetes
+* [AWS CLI]() - é uma ferramenta de linha de comando que permite interagir com os serviços da AWS
+* [eksctl]() - ferramenta de linha de comando para facilitar a criação, gerenciamento e operação de clusters na Amazon EKS
+<br>
 
-- [weave](docs/CNI/weave.md): Weave is a lightweight container overlay network that doesn't require an external K/V database cluster.
-    (Please refer to `weave` [troubleshooting documentation](https://www.weave.works/docs/net/latest/troubleshooting/)).
-
-- [kube-ovn](docs/CNI/kube-ovn.md): Kube-OVN integrates the OVN-based Network Virtualization with Kubernetes. It offers an advanced Container Network Fabric for Enterprises.
-
-- [kube-router](docs/CNI/kube-router.md): Kube-router is a L3 CNI for Kubernetes networking aiming to provide operational
-    simplicity and high performance: it uses IPVS to provide Kube Services Proxy (if setup to replace kube-proxy),
-    iptables for network policies, and BGP for ods L3 networking (with optionally BGP peering with out-of-cluster BGP peers).
-    It can also optionally advertise routes to Kubernetes cluster Pods CIDRs, ClusterIPs, ExternalIPs and LoadBalancerIPs.
-
-- [macvlan](docs/CNI/macvlan.md): Macvlan is a Linux network driver. Pods have their own unique Mac and Ip address, connected directly the physical (layer 2) network.
-
-- [multus](docs/CNI/multus.md): Multus is a meta CNI plugin that provides multiple network interface support to pods. For each interface Multus delegates CNI calls to secondary CNI plugins such as Calico, macvlan, etc.
-
-- [custom_cni](roles/network-plugin/custom_cni/) : You can specify some manifests that will be applied to the clusters to bring you own CNI and use non-supported ones by Kubespray.
-  See `tests/files/custom_cni/README.md` and `tests/files/custom_cni/values.yaml`for an example with a CNI provided by a Helm Chart.
-
-The network plugin to use is defined by the variable `kube_network_plugin`. There is also an
-option to leverage built-in cloud provider networking instead.
-See also [Network checker](docs/advanced/netcheck.md).
-
-## Ingress Plugins
-
-- [nginx](https://kubernetes.github.io/ingress-nginx): the NGINX Ingress Controller.
-
-- [metallb](docs/ingress/metallb.md): the MetalLB bare-metal service LoadBalancer provider.
-
-## Community docs and resources
-
-- [kubernetes.io/docs/setup/production-environment/tools/kubespray/](https://kubernetes.io/docs/setup/production-environment/tools/kubespray/)
-- [kubespray, monitoring and logging](https://github.com/gregbkr/kubernetes-kargo-logging-monitoring) by @gregbkr
-- [Deploy Kubernetes w/ Ansible & Terraform](https://rsmitty.github.io/Terraform-Ansible-Kubernetes/) by @rsmitty
-- [Deploy a Kubernetes Cluster with Kubespray (video)](https://www.youtube.com/watch?v=CJ5G4GpqDy0)
-
-## Tools and projects on top of Kubespray
-
-- [Digital Rebar Provision](https://github.com/digitalrebar/provision/blob/v4/doc/integrations/ansible.rst)
-- [Terraform Contrib](https://github.com/kubernetes-sigs/kubespray/tree/master/contrib/terraform)
-- [Kubean](https://github.com/kubean-io/kubean)
-
-## CI Tests
-
-[![Build graphs](https://gitlab.com/kargo-ci/kubernetes-sigs-kubespray/badges/master/pipeline.svg)](https://gitlab.com/kargo-ci/kubernetes-sigs-kubespray/-/pipelines)
-
-CI/end-to-end tests sponsored by: [CNCF](https://cncf.io), [Equinix Metal](https://metal.equinix.com/), [OVHcloud](https://www.ovhcloud.com/), [ELASTX](https://elastx.se/).
-
-See the [test matrix](docs/developers/test_cases.md) for details.
+## 👨🏼 Autor - Lucas Queiróz
+<div align="left"> 
+<a  href="https://github.com/lucas-qz" target="_blank"><img align="left" alt="GitHub" height="30" width="30" src="https://img.icons8.com/m_sharp/200/cecece/github.png"> GitHub - Lucas Queiróz </a><br/><br/>
+<a  href="https://www.linkedin.com/in/lucas-qz/" target="_blank"><img align="left" alt="Linkedin" height="30" width="30" src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png"> Linkedin - Lucas Queiróz </a><br/><br/>
+<a  href="http://lucasqz.com.br" target="_blank"><img align="left" alt="Portfólio" height="30" width="30" src="https://cdn-icons-png.flaticon.com/512/5602/5602732.png"> Portfólio - Lucas Queiróz </a><br/><br/>
+</div>
+<br/><br/>
