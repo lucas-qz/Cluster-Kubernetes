@@ -123,7 +123,7 @@ docker push <nome_da_imagem>
 docker logout
 ```
 
-- Executar o arquivo Kubernetes.yaml 
+- Executar o arquivo Kubernetes.yaml <br>
 Acesse a pasta do projeto e execute o comando abaixo
 ```ShellSession
 kubectl apply -f <arquivo_yaml>
