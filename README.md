@@ -62,7 +62,7 @@ kubectl version --client
 ```ShellSession
 aws configure
 ```
-Insira:  <br> Access Key ID  <br> Secret Access Key  <br> Região padrão (ex.: us-east-1)
+Insira:   Access Key ID / Secret Access Key / Região padrão (ex.: us-east-1) <br>
 
 - Verifique as Permissões da Conta  <br>
 Certifique-se de que o usuário tem as permissões adequadas.  <br>
@@ -70,7 +70,6 @@ Você pode usar a política gerenciada da AWS chamada AdministratorAccess durant
 
 ## <img align="left" alt="GitHub" height="30" width="30" src="https://upload.wikimedia.org/wikipedia/commons/3/39/Kubernetes_logo_without_workmark.svg"> Criar o Cluster EKS:
 - Crie o Cluster  <br>
-Deve demorar cerca de 15 minutos para a conclusão da criação do Cluster.
 ```ShellSession
 eksctl create cluster \
   --name meu-cluster \
