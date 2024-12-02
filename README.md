@@ -177,3 +177,6 @@ eksctl delete cluster --name meu-cluster --region us-east-1
 <a  href="http://lucasqz.com.br" target="_blank"><img align="left" alt="Portfólio" height="30" width="30" src="https://cdn-icons-png.flaticon.com/512/5602/5602732.png"> Portfólio - Lucas Queiróz </a><br/><br/>
 </div>
 <br/><br/>
+
+
+
